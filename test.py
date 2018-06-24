@@ -1,42 +1,44 @@
 import cv2 
 import numpy as np
 
-drawing = False # true if mouse is pressed
-mode = True # if True, draw rectangle. Press 'm' to toggle to curve
-ix,iy = -1,-1
+start = False # true if mouse is pressed
+ix,iy = -20,-20
+res = 32
+base = np.array(cv2.imread('example.png'),order='F')
+
+def draw_rec(x,y):
+    global ix,iy,base,res
+    s = ix-res
+    if (s<0):
+            s = 0 
+    k = iy-res
+    if (k<0):
+            k = 0 
+    img[k:iy+res+1,s:ix+res+1] = base[k:iy+res+1,s:ix+res+1].copy()
+    cv2.imshow('example',img)
+    cv2.rectangle(img,(x-res,y-res),(x+res,y+res),(0,255,0),1)
+    cv2.imshow('example',img)
+    ix, iy = x,y
 
 # mouse callback function
 def draw_circle(event,x,y,flags,param):
-    global ix,iy,drawing,mode
-
+    global ix,iy,start,base,res
     if event == cv2.EVENT_LBUTTONDOWN:
-        drawing = True
-        ix,iy = x,y
-
+        start = True
+        cv2.imshow('example',img)
     elif event == cv2.EVENT_MOUSEMOVE:
-        if drawing == True:
-            if mode == True:
-                cv2.rectangle(img,(ix,iy),(x,y),(0,255,0),-1)
-            else:
-                cv2.circle(img,(x,y),20,(0,0,255),-1)
+        if start == True:
+            draw_rec(x,y)
 
     elif event == cv2.EVENT_LBUTTONUP:
-        drawing = False
-        if mode == True:
-            cv2.rectangle(img,(ix,iy),(x,y),(0,255,0),-1)
-        else:
-            cv2.circle(img,(x,y),5,(0,0,255),-1)
+        start = False
 
-img = np.zeros((512,512,3), np.uint8)
-cv2.namedWindow('example.png')
-cv2.setMouseCallback('example.png',draw_circle)
-
+img = cv2.imread('example.png')
+cv2.namedWindow('example')
+cv2.setMouseCallback('example',draw_circle)
 while(1):
-    cv2.imshow('example.png',img)
     k = cv2.waitKey(1) & 0xFF
-    if k == ord('m'):
-        mode = not mode
-    elif k == 27:
+    if k ==27:
         break
 
 cv2.destroyAllWindows()
