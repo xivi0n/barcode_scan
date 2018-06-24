@@ -4,7 +4,7 @@ import numpy as np
 start = False # true if mouse is pressed
 ix,iy = -20,-20
 res = 32
-base = np.array(cv2.imread('example.png'),order='F')
+base = np.array(cv2.imread('bar1.jpg'),order='F')
 
 def draw_rec(x,y):
     global ix,iy,base,res
@@ -33,7 +33,7 @@ def draw_circle(event,x,y,flags,param):
     elif event == cv2.EVENT_LBUTTONUP:
         start = False
 
-img = cv2.imread('example.png')
+img = cv2.imread('bar1.jpg')
 cv2.namedWindow('example')
 cv2.setMouseCallback('example',draw_circle)
 while(1):
