@@ -17,7 +17,7 @@ white = 255
 crr = white
 f = True
 num = 0
-k = 0
+j = True
 s = 0
 
 def draw_rec(x,y):
@@ -34,9 +34,26 @@ def draw_rec(x,y):
     cv2.imshow('example',img)
     ix, iy = x,y
 
+def make_read(x,y):
+    global crr,j,s,num,f
+    if (abs(img[y,x,0]-crr)>20):
+        num+=1
+        #start = time.time()
+        read.append(time.time()-s)
+        j=True
+        if (f):
+            crr = black
+        else:
+            crr = white
+        f = not f
+    else:
+        if (j):
+            s = time.time()
+        j=False
+
 # mouse callback function
 def draw_circle(event,x,y,flags,param):
-    global ix,iy,start,base,res,f,num,crr,k,s
+    global ix,iy,start,base,res
     if event == cv2.EVENT_LBUTTONDOWN:
         start = True
         cv2.imshow('example',img)
@@ -44,24 +61,8 @@ def draw_circle(event,x,y,flags,param):
     elif event == cv2.EVENT_MOUSEMOVE:
         if start == True:
             draw_rec(x,y)
-            start=True
-            #print img[y,x,0]
-            if (abs(img[y,x,0]-crr)>20):
-                num+=1
-                #start = time.time()
-                print time.time()-s
-                read.append(time.time()-s)
-                k=0
-                if (f):
-                    crr = black
-                else:
-                    crr = white
-                f = not f
-            else:
-                if (k==0):
-                    print "poceo"
-                    s = time.time()
-                k=1
+            make_read(x,y)
+            
 
 
     elif event == cv2.EVENT_LBUTTONUP:
