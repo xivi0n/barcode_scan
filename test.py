@@ -3,7 +3,7 @@ import numpy as np
 import time
 import math
 
-file_name = 'bar3.png'
+file_name = 'bar1.jpg'
 start = False # true if mouse is pressed
 ix,iy = -20,-20
 res = 32
@@ -93,7 +93,7 @@ def make_n():
             read_n.append(pom)
             pom=[]
     #print read
-    #print read_n
+    print read_n
 
 def remake_n():
     global px1,px2,px3
@@ -146,26 +146,33 @@ def testtest():
     print 
 
 def testtest2():
-    for aje in flag:
+    for m in range(0,len(flag)):
         k = 0
         sum = 0
         for i in range(0,4):
-            if (aje[i]=="NE"):
+            if (flag[m][i]=="NE"):
                 k+=1
-            elif (aje[i]>4):
-                aje[i]=4
-                tocmp[flag.index(aje)][i]=4
-            else:
-                sum += aje[i]
+            elif (flag[m][i]>4):
+                flag[m][i]=4
+                tocmp[m][i]=4
+
+            if (flag[m][i]!="NE"):
+                sum += flag[m][i]
             
         if (k==1):
             k = 0
             for i in range(0,4):
-                if (aje[i]!="NE"):
-                    k+=aje[i]
+                if (flag[m][i]!="NE"):
+                    k+=flag[m][i]
                 else:
                     j = i
-            tocmp[flag.index(aje)][j]=7-k
+            print 7-k,
+            print m,j
+            tocmp[m][j]=7-k
+        elif(k>1) and (k!=4):
+            print "jbg vise NE"
+
+
     print tocmp
 
 def cmparr(a,b):
@@ -177,12 +184,12 @@ def cmparr(a,b):
 
 def cmpr():
     for x in tocmp:
-        print "poco"
+        print "poco",
         for y in numbers:
             if (cmparr(x,y)==4):
-                print numbers.index(y)
+                print numbers.index(y),
             elif (cmparr(x,y)==3):
-                print x,y,numbers.index(y)
+                print x,y,numbers.index(y),
         print "tjt"
                 
 
