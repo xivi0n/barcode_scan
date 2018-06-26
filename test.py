@@ -36,6 +36,10 @@ px2 = 0
 px3 = 0
 again = False
 
+read_pos = []
+read_pos_d = []
+read_pos_n = []
+
 def draw_rec(x,y):
     global ix,iy,res
     s = ix-res
@@ -50,16 +54,65 @@ def draw_rec(x,y):
     cv2.imshow('example',img)
     ix, iy = x,y
 
+def d(a,b):
+    k=1.0*(b[1]-a[1])/(b[0]-a[0])
+    return math.sqrt(pow(b[0]-a[0],2)+pow(b[1]-a[1],2))*pow(k*k+1,-0.5)
+
+def make_read_pos(x,y):
+    global crr,j,s,num,f
+    if (abs(img[y,x,0]-crr)>20):
+        num+=1
+        read_pos.append(s)
+        #font = cv2.FONT_HERSHEY_SIMPLEX
+        #cv2.putText(img,'%.2f'%(d(read_pos[num-1],read_pos[num])),(read_pos[num][0]-10,read_pos[num][1]-40-num*10), font, 0.3,(0,0,255),1,cv2.LINE_AA)
+        j=True
+        if (f):
+            crr = black
+        else:
+            crr = white
+        f = not f
+    else:
+        if (j):
+            s = [x,y]
+        j=False
+
+def calc_read_pos():
+    for i in range(0,len(read_pos)-1):
+        read_pos_d.append(d(read_pos[i],read_pos[i+1]))
+    read_pos_d.pop(0)
+    
+def calc_px_pos():
+    num = (len(read_pos_d)-10)/2
+    read_pos_d.pop(0)
+    read_pos_d.pop(0)
+    read_pos_d.pop(0)
+    read_pos_d.pop(num-1)
+    read_pos_d.pop(num-1)
+    read_pos_d.pop(num-1)
+    read_pos_d.pop(num-1)
+    read_pos_d.pop(num-1)
+    read_pos_d.pop()
+    read_pos_d.pop()
+
+def make_pos_n():
+    pom = []
+    for i in range(1,len(read_pos_d)+1):
+        if (i%4!=0):
+            pom.append(read_pos_d[i-1])
+        else:
+            pom.append(read_pos_d[i-1])
+            read_pos_n.append(pom)
+            pom=[]
+    #print read
+    #print read_n
+
+
 def make_read(x,y):
     global crr,j,s,num,f
     if (abs(img[y,x,0]-crr)>20):
         num+=1
         read.append(time.time()-s)
         j=True
-        if (num==10):
-            num = -1
-        #font = cv2.FONT_HERSHEY_SIMPLEX
-        #cv2.putText(img,'%.2f'%(time.time()-s),(x-20,y-30-num*9), font, 0.3,(0,0,255),1,cv2.LINE_AA)
         if (f):
             crr = black
         else:
@@ -74,7 +127,7 @@ def calc_read():
     read.pop(0)
     for i in range(0,len(read)):
         read[i]=math.trunc(read[i]*100000)
-        
+    
 def calc_px():
     global px1,px2,px3
     num = (len(read)-9)/2
@@ -130,7 +183,7 @@ def calcxpx(x,k):
         return ("NE")
 
 def testtest():
-    for aje in read_n:
+    for aje in read_pos_n:
         px = 0
         for x in aje:
             px = x+px
@@ -240,7 +293,7 @@ def do_events(event,x,y,flags,param):
     elif event == cv2.EVENT_MOUSEMOVE:
         if start == True:
             draw_rec(x,y)
-            make_read(x,y)
+            make_read_pos(x,y)
 
 
     elif event == cv2.EVENT_LBUTTONUP:
@@ -253,19 +306,26 @@ cv2.imshow('example',img)
 while(1):
     k = cv2.waitKey(1) & 0xFF
     if k ==27:
+        print num
         break
 
-calc_read()
-#print read
-#print len(read)
-#calc_dx()
-calc_px()
-#print read
-#print len(read)
-make_n()
-#remake_n()
-testtest()
+# read.pop(0)
+# #calc_read()
+# #print read
+# #print len(read)
+# #calc_dx()
+# calc_px()
+# #print read
+# #print len(read)
+# make_n()
+# #remake_n()
+# testtest()
 
+calc_read_pos()
+calc_px_pos()
+make_pos_n()
+
+testtest()
 
 cmpr()
 
