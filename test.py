@@ -55,7 +55,11 @@ def draw_rec(x,y):
     ix, iy = x,y
 
 def d(a,b):
-    k=1.0*(b[1]-a[1])/(b[0]-a[0])
+    m=(b[0]-a[0])
+    if (m==0):
+        k = 0
+    else:
+        k=1.0*(b[1]-a[1])/m
     return math.sqrt(pow(b[0]-a[0],2)+pow(b[1]-a[1],2))*pow(k*k+1,-0.5)
 
 def make_read_pos(x,y):
@@ -82,7 +86,8 @@ def calc_read_pos():
     read_pos_d.pop(0)
     
 def calc_px_pos():
-    num = (len(read_pos_d)-10)/2
+    print len(read_pos_d)
+    num = (len(read_pos_d)-8)/2
     read_pos_d.pop(0)
     read_pos_d.pop(0)
     read_pos_d.pop(0)
@@ -300,13 +305,12 @@ def do_events(event,x,y,flags,param):
         start = False
 
 img = cv2.imread(file_name)
-cv2.namedWindow('example')
+cv2.namedWindow('example',cv2.WINDOW_NORMAL)
 cv2.setMouseCallback('example',do_events)
 cv2.imshow('example',img)
 while(1):
     k = cv2.waitKey(1) & 0xFF
     if k ==27:
-        print num
         break
 
 # read.pop(0)
