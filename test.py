@@ -4,7 +4,7 @@ import time
 import math
 
 file_name = 'bar1.jpg'
-start = False # true if mouse is pressed
+start = False
 ix,iy = -20,-20
 res = 32
 base = cv2.imread(file_name)
@@ -86,7 +86,6 @@ def calc_read_pos():
     read_pos_d.pop(0)
     
 def calc_px_pos():
-    print len(read_pos_d)
     num = (len(read_pos_d)-8)/2
     read_pos_d.pop(0)
     read_pos_d.pop(0)
@@ -185,7 +184,7 @@ def calcxpx(x,k):
     elif(10.0*x%10>10-k):
         return (math.trunc(1.0*x)+1)
     else:
-        return ("NE")
+        return (-1)
 
 def testtest():
     for aje in read_pos_n:
@@ -204,25 +203,57 @@ def testtest():
             else:
                 pom.append(1.0*x/px)
             pom2.append(calcxpx(1.0*x/px,2))
-        print px,aje,pom2,pom
+        
         tocmp.append(pom)
         flag.append(pom2)
     
-
     while(testtest2()!=0):
-        print "PONOVO"
-    print 
-    print flag
-    print 
+        continue
+        # print "--------------------------"
+        # print flag
+        # print
+        # print tocmp
+        # print "--------------------------"
+
+    #print 
+    #print flag
+    #print
 
 def onek(m):
     k = 0
     for i in range(0,4):
-        if (flag[m][i]!="NE"):
+        if (flag[m][i]!=-1):
             k+=flag[m][i]
         else:
             j = i
     flag[m][j]=7-k
+
+def twok(m,ktor):
+    probnum = []
+    for x in numbers:
+        if (cmparr(flag[m],x)==2):
+            probnum.append(x)
+    if (len(probnum)==1):
+        flag[m]=probnum[0]
+    else:
+        cal = []
+        inx = [j for j in range(0,len(flag[m])) if flag[m][j] == -1] 
+        for i in range(0,len(probnum)):
+            cal.append(sum([abs(tocmp[m][j]-probnum[i][j]) for j in inx]))
+        #print cal
+        # for i in range(0,len(cal)):
+        #     cal[i]=cal[i][0]+cal[i][1]
+        flag[m] = probnum[cal.index(min(cal))]
+
+def calc_min(m,ktor):
+    min = abs(tocmp[m][ktor[0]]%1-0.50)
+    n = ktor[0]
+    for i in range(1,len(ktor)):
+        pom = abs(tocmp[m][ktor[i]]%1-0.50)
+        if (pom>min):
+            min = pom
+            n = ktor[i]
+    return n
 
 def testtest2():
     global again
@@ -234,9 +265,10 @@ def testtest2():
         n = 0
         ktor=[]
         for i in range(0,4):
-            if (flag[m][i]=="NE"):
+            if (flag[m][i]==-1):
                 ktor.append(i)
                 k+=1
+
             elif (flag[m][i]>4):
                 flag[m][i]=4
                 #tocmp[m][i]=4
@@ -244,30 +276,22 @@ def testtest2():
             if (flag[m][i]==4) and ((i==0) or (i==2)):
                 flag[m][i]=3
 
-            if (flag[m][i]!="NE"):
+            if (flag[m][i]!=-1):
                 sum += flag[m][i]
+        
         if (k==1):
             onek(m)
             k-=1
-            #tocmp[m][j]=7-k
-        elif(k>1):
-            min = abs(tocmp[m][ktor[0]]%1-0.50)
-            for i in range(1,len(ktor)):
-                pom = abs(tocmp[m][ktor[0]]%1-0.50)
-                n = ktor[0]
-                if (pom>min):
-                    min = pom
-                    n = ktor[i]
+        elif (k==2):
+            twok(m,ktor)
+            k-=2
+        elif(k>2):
+            n = calc_min(m,ktor)
             k-=1
             flag[m][n] = calcxpx(tocmp[m][n],5)
             again = True
-        elif (k!=0):
-            print "jbg vise NE"
         numk+=k
     return numk
-        
-    #if again:
-     #  testtest2()
 
 def cmparr(a,b):
     pom = 0
@@ -276,17 +300,18 @@ def cmparr(a,b):
             pom+=1
     return pom
 
-def cmpr():
+def calc_num():
     for x in flag:
-        print "poco",
+        print x,
         for y in numbers:
             if (cmparr(x,y)==4):
                 print numbers.index(y),
             elif (cmparr(x,y)==3):
-                print x,y,numbers.index(y),
-        print "tjt"
+                print numbers.index(y),
+            # elif (cmparr(x,y)>1):
+            #     print numbers.index(y),
+        print "--"
                 
-
 
 # mouse callback function
 def do_events(event,x,y,flags,param):
@@ -331,6 +356,6 @@ make_pos_n()
 
 testtest()
 
-cmpr()
+calc_num()
 
 cv2.destroyAllWindows()
