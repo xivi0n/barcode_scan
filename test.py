@@ -60,7 +60,11 @@ def d(a,b):
         k = 0
     else:
         k=1.0*(b[1]-a[1])/m
-    return math.sqrt(pow(b[0]-a[0],2)+pow(b[1]-a[1],2))*pow(k*k+1,-0.5)
+    if (b[0]>=a[0]):
+        j = 1
+    else:
+        j = -1
+    return j*math.sqrt(pow(b[0]-a[0],2)+pow(b[1]-a[1],2))*pow(k*k+1,-0.5)
 
 def make_read_pos(x,y):
     global crr,j,s,num,f
@@ -80,11 +84,37 @@ def make_read_pos(x,y):
             s = [x,y]
         j=False
 
+def check_read_pos_left():
+    k = len(read_pos)-2
+    x = read_pos[0][0]
+    i = 1
+    while (k>i):
+        if (x>read_pos[i][0]):
+            read_pos.pop(i)
+            k-=1
+        elif (abs(read_pos[i][0]-read_pos[i+1][0])<=5):
+            x = read_pos[i][0]
+            i+=1
+        else:
+            i+=1
+
+
 def calc_read_pos():
+    check_read_pos_left()
+    print [x for x in read_pos]
+    img = cv2.imread(file_name)
+    cv2.namedWindow('example12',cv2.WINDOW_NORMAL)
+    cv2.imshow('example12',img)
     for i in range(0,len(read_pos)-1):
+        cv2.line(img,(read_pos[i][0],read_pos[i][1]),(read_pos[i+1][0],read_pos[i+1][1]),(255,0,0),2)
         read_pos_d.append(d(read_pos[i],read_pos[i+1]))
     read_pos_d.pop(0)
-    
+    cv2.imshow('example12',img)
+    while(1):
+        k = cv2.waitKey(1) & 0xFF
+        if k ==27:
+            break
+
 def calc_px_pos():
     num = (len(read_pos_d)-8)/2
     read_pos_d.pop(0)
@@ -282,10 +312,10 @@ def testtest2():
         if (k==1):
             onek(m)
             k-=1
-        elif (k==2):
-            twok(m,ktor)
-            k-=2
-        elif(k>2):
+        # elif (k==2):
+        #     twok(m,ktor)
+        #     k-=2
+        elif(k>1):
             n = calc_min(m,ktor)
             k-=1
             flag[m][n] = calcxpx(tocmp[m][n],5)
@@ -351,6 +381,7 @@ while(1):
 # testtest()
 
 calc_read_pos()
+print read_pos_d
 calc_px_pos()
 make_pos_n()
 
