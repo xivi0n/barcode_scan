@@ -23,13 +23,14 @@ read_n = []
 tocmp = [] 
 flag = []
 pxs = []
+
 black = 0
 white = 255
 crr = white
 f = True
-num = -1
 j = True
-s = 0
+s = []
+
 dx = 0
 px1 = 0
 px2 = 0
@@ -54,7 +55,7 @@ def draw_rec(x,y):
     cv2.imshow('example',img)
     ix, iy = x,y
 
-def d(a,b):
+def d(a,b): #dodao
     m=(b[0]-a[0])
     if (m==0):
         k = 0
@@ -66,10 +67,9 @@ def d(a,b):
         j = -1
     return j*math.sqrt(pow(b[0]-a[0],2)+pow(b[1]-a[1],2))*pow(k*k+1,-0.5)
 
-def make_read_pos(x,y):
-    global crr,j,s,num,f
+def make_read_pos(x,y,img):
+    global crr,j,s,f,black,white
     if (abs(img[y,x,0]-crr)>20):
-        num+=1
         read_pos.append(s)
         #font = cv2.FONT_HERSHEY_SIMPLEX
         #cv2.putText(img,'%.2f'%(d(read_pos[num-1],read_pos[num])),(read_pos[num][0]-10,read_pos[num][1]-40-num*10), font, 0.3,(0,0,255),1,cv2.LINE_AA)
@@ -105,10 +105,13 @@ def calc_read_pos():
     img = cv2.imread(file_name)
     cv2.namedWindow('example12',cv2.WINDOW_NORMAL)
     cv2.imshow('example12',img)
-    for i in range(0,len(read_pos)-1):
-        cv2.line(img,(read_pos[i][0],read_pos[i][1]),(read_pos[i+1][0],read_pos[i+1][1]),(255,0,0),2)
-        read_pos_d.append(d(read_pos[i],read_pos[i+1]))
-    read_pos_d.pop(0)
+    for i in range(1,len(read_pos)-1):
+        img[read_pos[i-1][1],read_pos[i-1][0]] = [0,0,255]
+        if (abs(read_pos[i][0]-read_pos[i+1][0])>2):
+            cv2.line(img,(read_pos[i][0],read_pos[i][1]),(read_pos[i+1][0],read_pos[i+1][1]),(255,0,0),3)
+            read_pos_d.append(d(read_pos[i],read_pos[i+1]))
+    img[read_pos[i][1],read_pos[i][0]] = [0,0,255]
+    img[read_pos[i+1][1],read_pos[i+1][0]] = [0,0,255]
     cv2.imshow('example12',img)
     while(1):
         k = cv2.waitKey(1) & 0xFF
@@ -239,11 +242,6 @@ def testtest():
     
     while(testtest2()!=0):
         continue
-        # print "--------------------------"
-        # print flag
-        # print
-        # print tocmp
-        # print "--------------------------"
 
     #print 
     #print flag
@@ -312,9 +310,9 @@ def testtest2():
         if (k==1):
             onek(m)
             k-=1
-        # elif (k==2):
-        #     twok(m,ktor)
-        #     k-=2
+        elif (k==2):
+            twok(m,ktor)
+            k-=2
         elif(k>1):
             n = calc_min(m,ktor)
             k-=1
@@ -338,8 +336,6 @@ def calc_num():
                 print numbers.index(y),
             elif (cmparr(x,y)==3):
                 print numbers.index(y),
-            # elif (cmparr(x,y)>1):
-            #     print numbers.index(y),
         print "--"
                 
 
@@ -353,7 +349,7 @@ def do_events(event,x,y,flags,param):
     elif event == cv2.EVENT_MOUSEMOVE:
         if start == True:
             draw_rec(x,y)
-            make_read_pos(x,y)
+            make_read_pos(x,y,img)
 
 
     elif event == cv2.EVENT_LBUTTONUP:
