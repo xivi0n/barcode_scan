@@ -1,3 +1,5 @@
+import math
+
 #variables for precalculation
 read_pos   = [] #raw points of bar edges locations on image
 read_pos_d = [] #distance between edges of bars (bar width)
@@ -69,8 +71,7 @@ def remove_left():
             i+=1                    #going on next index
 
 #creating read_pos_d
-def get_distance():
-    remove_left()                                               #removing surplus elements
+def get_distance():                                              #removing surplus elements
     for i in range(1,len(read_pos)-1):                          #removed first and last point
         if (abs(read_pos[i][0]-read_pos[i+1][0])>2):            #if two points are not on same x axis
             read_pos_d.append(width(read_pos[i],read_pos[i+1])) #calculate width and append
