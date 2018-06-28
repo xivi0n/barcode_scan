@@ -15,6 +15,18 @@ f = True    #true if white false if black
 j = True    #true if changing colors
 s = []      #point
 
+#UPC numbers written as bar sizes
+numbers = [[3,2,1,1],#0
+           [2,2,2,1],#1
+           [2,1,2,2],#2
+           [1,4,1,1],#3
+           [1,1,3,2],#4
+           [1,2,3,1],#5
+           [1,1,1,4],#6
+           [1,3,1,2],#7
+           [1,2,1,3],#8
+           [3,1,1,2]]#9
+
 #calculating distance between two x=a[0] and x=b[0] lines of bars
 def width(a,b):
     m=(b[0]-a[0])
