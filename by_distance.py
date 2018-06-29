@@ -78,7 +78,7 @@ def get_distance():                                              #removing surpl
 
 #removing indicator bars (first 3, middle 5 and last 3)
 def remove_indicators():
-    num = (len(read_pos_d)-8)/2 #calculating middle index
+    num = int((len(read_pos_d)-8)/2) #calculating middle index
     read_pos_d.pop(0)           #removing first bar1   
     read_pos_d.pop(0)           
     read_pos_d.pop(0)           
@@ -217,10 +217,10 @@ def classify_less_precision():
 #compares calculated numbers and barcode default numbers
 def get_number():
     for x in flag:
-        print x, #calculated number written as bar sizes
+        print(x), #calculated number written as bar sizes
         for y in numbers:
             if (cmparr(x,y)==4):    #must be that number
-                print numbers.index(y),
+                print(numbers.index(y)),
             elif (cmparr(x,y)==3):  #probably that number
-                print numbers.index(y),
-        print "--"
+                print(numbers.index(y)),
+        print("--")
