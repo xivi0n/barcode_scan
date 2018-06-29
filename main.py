@@ -44,11 +44,11 @@ def make_argv(argv):
     try:
         opts, args = getopt.getopt(argv,"hi:",["ifile="])
     except getopt.GetoptError:
-        print('main.py -i <inputfile>')
+        print 'main.py -i <inputfile>'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('main.py -i <file_name>')
+            print 'main.py -i <file_name>'
             sys.exit()
         elif opt in ("-i", "--ifile"):
             file_name = arg
@@ -56,7 +56,7 @@ def make_argv(argv):
 if __name__ == "__main__":
    make_argv(sys.argv[1:])
 
-print('Reading barcode from file:', file_name)
+print 'Reading barcode from file:', file_name
 img = cv2.imread(file_name)
 cv2.namedWindow('example',cv2.WINDOW_NORMAL)
 cv2.setMouseCallback('example',do_events)
