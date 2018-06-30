@@ -2,7 +2,6 @@ from pymouse import PyMouseEvent,PyMouse
 from time import time
 
 ix,iy = 900,500
-mouse = PyMouse()
 lx = 0
 ly = 0
 start = time()
@@ -11,7 +10,7 @@ class Mouse(PyMouseEvent):
         PyMouseEvent.__init__(self)
 
     def move(self,x,y):
-        global lx,ly,start,mouse
+        global lx,ly,start
         if (time()-start>0.1):
             print "dx:",x-lx,"dy:",y-ly
             start = time()
@@ -24,6 +23,7 @@ class Mouse(PyMouseEvent):
             if press:
                 exit()
 
+mouse = PyMouse()
 ix,iy = mouse.screen_size()
 ix /= 2
 iy /= 2
