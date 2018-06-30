@@ -210,18 +210,10 @@ def classify_less_precision(flag,tocmp):
         if (k==1):         #if numbers of unknown is 1 
             onek(m,flag)        #calculate it
             k-=1           #decrement k
-<<<<<<< Updated upstream
         #elif (k==2):       #if numbers of unknown is 2
         #    k-=twok(m,ktor,tocmp,flag)          #calculate it; decrement k 
         elif(k>1):         #if numbers of unknown is >2
             n = calc_min(m,ktor,tocmp) #calculate index of most precise number
-=======
-        # elif (k==2):       #if numbers of unknown is 2
-        #     twok(m,ktor)   #calculate it
-        #     k-=2           #2x decrement k 
-        elif(k>1):         #if numbers of unknown is >2
-            n = calc_min(m,ktor) #calculate index of most precise number
->>>>>>> Stashed changes
             k-=1  #decrement k
             flag[m][n] = classifyBar(tocmp[m][n],5) #classify bar
         numk+=k   #add number of unknown bars for each number
