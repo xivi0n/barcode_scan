@@ -1,10 +1,13 @@
 from pymouse import PyMouseEvent,PyMouse
+import matplotlib.pyplot as plt
 from time import time
 import numpy as np
 import cv2 
 import sys
 
 dpoints = []
+tel = []
+normdata = []
 start = False
 lx,ly = 0, 0
 ix,iy = 900,500
@@ -21,10 +24,13 @@ class MouseEvent(PyMouseEvent):
         PyMouseEvent.__init__(self)
 
     def move(self,x,y):
-        global lx,ly,start,lastTime
-        if (time()-lastTime>0.125) and start:
+        global lx,ly,start,lastTime,startingTime
+        t = time()
+        if (t-lastTime>0.125) and start:
             print "dx:",x-lx,"dy:",y-ly
-            dpoints.append([x-lx,y-ly])
+            #dpoints.append([x-lx,y-ly])
+            dpoints.append(x-lx)
+            tel.append(t-startingTime)
             lastTime = time()
             lx,ly=ix,iy
             m = PyMouse()
@@ -43,6 +49,24 @@ class MouseEvent(PyMouseEvent):
                 print "Total time:",timeEl
                 raise ListenInterrupt("Input read.")
                 
+def normalize(dpoints):
+    avrg = 1.0*np.sum(dpoints)/len(dpoints)
+    normdata = []
+    minx = min(dpoints)
+    maxx = max(dpoints)
+    for x in dpoints:
+        normdata.append(1.0*(x-minx)/(maxx-minx))
+    avrg = 1.0*(avrg-minx)/(maxx-minx)
+    return normdata,avrg
+
+def recalculate(normdata,k):
+    pom = []
+    for x in normdata:
+        if (x<k):
+            pom.append(x)
+        else:
+            pom.append(0)
+    return pom
 
 mouse = PyMouse()
 ix,iy = mouse.screen_size()
@@ -65,5 +89,39 @@ except ListenInterrupt as e:
     print(e.args[0])
 
 print "(dx,dy):",dpoints
+
+dpoints.pop(0)
+tel.pop(0)
+
+ax = plt.gca()
+fig = plt.figure()
+#ax.set_ylim()
+ax.set_xlim([0,max(tel)])
+plt.plot(tel, dpoints)
+pom = []
+for i in range(len(tel)):
+    pom.append(np.sum(dpoints)/len(dpoints))
+
+plt.plot(tel,pom)
+plt.grid(True)
+plt.draw()
+plt.waitforbuttonpress(0)
+plt.close(fig)
+
+normdata,avrg = normalize(dpoints)
+pom = []
+for i in range(len(tel)):
+    pom.append(avrg)
+
+plt.plot(tel,normdata)
+plt.plot(tel,pom)
+recalc = recalculate(normdata,0.2)
+#plt.plot(tel,recalc)
+ax.set_ylim([0,1])
+ax.set_xlim([0,max(tel)])
+plt.grid(True)
+plt.draw()
+plt.waitforbuttonpress(0)
+plt.close(fig)
 
 cv2.destroyAllWindows()
