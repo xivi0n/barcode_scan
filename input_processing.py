@@ -28,7 +28,7 @@ class MouseEvent(PyMouseEvent):
     def move(self,x,y):
         global lx,ly,start,lastTime,startingTime
         t = time()
-        if (t-lastTime>0.1) and start:
+        if (t-lastTime>0.05) and start:
             #print "dx:",x-lx,"dy:",y-ly
             #dpoints.append([x-lx,y-ly])
             xpoints.append(x-lx)
@@ -51,6 +51,14 @@ class MouseEvent(PyMouseEvent):
                 timeEl = time()-startingTime
                 print "Total time:",timeEl
                 raise ListenInterrupt("Input read.")
+
+def draw_canvas():
+    img = np.zeros((500,500))
+    window_name = "input"
+    cv2.namedWindow(window_name,cv2.WINDOW_NORMAL)
+    cv2.imshow(window_name,img)
+    cv2.moveWindow(window_name,ix-200,iy-200) 
+    cv2.waitKey(1) 
 
 def recalc_x(xpoints,k):
     pom = np.abs(xpoints)
@@ -83,6 +91,18 @@ def recalculate(normdata,k):
             pom.append(k)
     return pom
 
+def remake(data,k):
+    pom = np.copy(data)
+    for i in range(len(pom)-1):
+        if (pom[i]==k):
+            while (pom[i+1]==k):
+                pom[i+1]=0
+                i+=1
+        elif (pom[i]<k):
+            pom[i]=0
+    print pom
+    return pom
+
 mouse = PyMouse()
 ix,iy = mouse.screen_size()
 ix /= 2
@@ -90,13 +110,7 @@ iy /= 2
 print ix,iy
 mouse.move(ix,iy)
 
-img = np.zeros((500,500))
-window_name = "input"
-cv2.namedWindow(window_name,cv2.WINDOW_NORMAL)
-cv2.imshow(window_name,img)
-cv2.moveWindow(window_name,ix-200,iy-200) 
-cv2.waitKey(1) 
-
+draw_canvas()
 try:
     mouse = MouseEvent()
     mouse.run()
@@ -118,7 +132,7 @@ ax.set_xlim([0,max(tel)])
 xpoints = np.abs(xpoints)
 plt.plot(tel, xpoints,'.-')
 
-#xpoints = recalc_x(xpoints,15)
+#xpoints = recalc_x(xpoints,1)
 
 plt.plot(tel, xpoints,'.-')
 plt.grid(True)
@@ -145,6 +159,8 @@ for i in range(len(tel)):
 xrecalc = recalculate(xnormdata,0.2)
 yrecalc = recalculate(ynormdata,0.2)
 
+fig = plt.figure()
+
 plt.subplot(2, 1, 1)
 plt.plot(tel,xnormdata,'.-')
 plt.plot(tel,xrecalc,'.-')
@@ -161,6 +177,16 @@ ax.set_xlim([0,max(tel)])
 plt.ylabel('movement on y')
 plt.grid(True)
 
+plt.draw()
+plt.waitforbuttonpress(0)
+plt.close(fig)
+
+fig = plt.figure()
+plt.grid(True)
+ax.set_ylim([0,1])
+ax.set_xlim([0,max(tel)])
+plt.plot(tel, remake(xrecalc,0.2),'o-')
+plt.plot(tel,xrecalc,'.-')
 plt.draw()
 plt.waitforbuttonpress(0)
 plt.close(fig)
