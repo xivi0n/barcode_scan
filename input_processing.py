@@ -6,6 +6,8 @@ import cv2
 import sys
 
 dpoints = []
+xpoints = []
+ypoints = []
 tel = []
 normdata = []
 start = False
@@ -26,10 +28,11 @@ class MouseEvent(PyMouseEvent):
     def move(self,x,y):
         global lx,ly,start,lastTime,startingTime
         t = time()
-        if (t-lastTime>0.125) and start:
-            print "dx:",x-lx,"dy:",y-ly
+        if (t-lastTime>0.1) and start:
+            #print "dx:",x-lx,"dy:",y-ly
             #dpoints.append([x-lx,y-ly])
-            dpoints.append(x-lx)
+            xpoints.append(x-lx)
+            ypoints.append(y-ly)
             tel.append(t-startingTime)
             lastTime = time()
             lx,ly=ix,iy
@@ -48,9 +51,21 @@ class MouseEvent(PyMouseEvent):
                 timeEl = time()-startingTime
                 print "Total time:",timeEl
                 raise ListenInterrupt("Input read.")
-                
+
+def recalc_x(xpoints,k):
+    pom = np.abs(xpoints)
+    rez = []
+    for x in pom:
+        if (x<k):
+            rez.append(0)
+        else:
+            rez.append(k)
+    return rez
+
+
 def normalize(dpoints):
     avrg = 1.0*np.sum(dpoints)/len(dpoints)
+    dpoints = np.abs(dpoints)
     normdata = []
     minx = min(dpoints)
     maxx = max(dpoints)
@@ -65,7 +80,7 @@ def recalculate(normdata,k):
         if (x<k):
             pom.append(x)
         else:
-            pom.append(0)
+            pom.append(k)
     return pom
 
 mouse = PyMouse()
@@ -87,41 +102,66 @@ try:
     mouse.run()
 except ListenInterrupt as e:
     print(e.args[0])
+    cv2.destroyAllWindows()
 
-print "(dx,dy):",dpoints
+#print "(dx,dy):",[x,y for x,y in xpoints,ypoints]
 
-dpoints.pop(0)
+xpoints.pop(0)
+ypoints.pop(0)
 tel.pop(0)
 
 ax = plt.gca()
 fig = plt.figure()
 #ax.set_ylim()
+plt.subplot(2, 1, 1)
 ax.set_xlim([0,max(tel)])
-plt.plot(tel, dpoints)
-pom = []
-for i in range(len(tel)):
-    pom.append(np.sum(dpoints)/len(dpoints))
+xpoints = np.abs(xpoints)
+plt.plot(tel, xpoints,'.-')
 
-plt.plot(tel,pom)
+#xpoints = recalc_x(xpoints,15)
+
+plt.plot(tel, xpoints,'.-')
+plt.grid(True)
+plt.ylabel('movement on x')
+plt.subplot(2, 1, 2)
+plt.plot(tel, ypoints,'o-')
+ax.set_xlim([0,max(tel)])
+plt.ylabel('movement on y')
+pom = []
+#for i in range(len(tel)):
+#    pom.append(np.sum(dpoints)/len(dpoints))
+
+#plt.plot(tel,pom)
 plt.grid(True)
 plt.draw()
 plt.waitforbuttonpress(0)
 plt.close(fig)
 
-normdata,avrg = normalize(dpoints)
+xnormdata, avrgx = normalize(xpoints)
+ynormdata, avrgy = normalize(ypoints)
 pom = []
 for i in range(len(tel)):
-    pom.append(avrg)
+    pom.append(avrgx)
+xrecalc = recalculate(xnormdata,0.2)
+yrecalc = recalculate(ynormdata,0.2)
 
-plt.plot(tel,normdata)
-plt.plot(tel,pom)
-recalc = recalculate(normdata,0.2)
-#plt.plot(tel,recalc)
-ax.set_ylim([0,1])
+plt.subplot(2, 1, 1)
+plt.plot(tel,xnormdata,'.-')
+plt.plot(tel,xrecalc,'.-')
+ax.set_ylim([-1,1])
 ax.set_xlim([0,max(tel)])
+plt.ylabel('movement on x')
 plt.grid(True)
+
+plt.subplot(2, 1, 2)
+plt.plot(tel,ynormdata,'o-')
+plt.plot(tel,yrecalc,'o-')
+ax.set_ylim([-1,1])
+ax.set_xlim([0,max(tel)])
+plt.ylabel('movement on y')
+plt.grid(True)
+
 plt.draw()
 plt.waitforbuttonpress(0)
 plt.close(fig)
-
-cv2.destroyAllWindows()
+#plt.show()
