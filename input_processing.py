@@ -28,7 +28,7 @@ class MouseEvent(PyMouseEvent):
     def move(self,x,y):
         global lx,ly,start,lastTime,startingTime
         t = time()
-        if (t-lastTime>0.05) and start:
+        if (t-lastTime>0.1) and start:
             #print "dx:",x-lx,"dy:",y-ly
             #dpoints.append([x-lx,y-ly])
             xpoints.append(x-lx)
@@ -92,16 +92,36 @@ def recalculate(normdata,k):
     return pom
 
 def remake(data,k):
-    pom = np.copy(data)
+    pom = [i for i in data]
     for i in range(len(pom)-1):
-        if (pom[i]==k):
-            while (pom[i+1]==k):
+        if (pom[i]!=0):
+            while(i+1<len(pom)) and (pom[i+1]!=0):
                 pom[i+1]=0
                 i+=1
         elif (pom[i]<k):
             pom[i]=0
     print pom
     return pom
+
+def make_dis(tel,datax,datay,k):
+    pomx = []
+    pomy = []
+    for i in range(len(datax)):
+        if (datax[i]!=0):
+            start = tel[i]
+            n = i
+            i+=1
+            while(i<len(datax)) and (datax[i]==0):
+                i+=1
+            if (i!=len(datax)):
+                pomx.append(tel[i]-start)
+                pomy.append(sum(datay[n:i]))
+    print len(pomx)
+    pomx = [abs(x) for x in pomx]
+    pomy = [abs(x) for x in pomy]
+    print pomx
+    print pomy
+    return pomx,pomy
 
 mouse = PyMouse()
 ix,iy = mouse.screen_size()
@@ -119,6 +139,8 @@ except ListenInterrupt as e:
     cv2.destroyAllWindows()
 
 #print "(dx,dy):",[x,y for x,y in xpoints,ypoints]
+
+k = 0.2
 
 xpoints.pop(0)
 ypoints.pop(0)
@@ -156,8 +178,8 @@ ynormdata, avrgy = normalize(ypoints)
 pom = []
 for i in range(len(tel)):
     pom.append(avrgx)
-xrecalc = recalculate(xnormdata,0.2)
-yrecalc = recalculate(ynormdata,0.2)
+xrecalc = recalculate(xnormdata,k)
+yrecalc = recalculate(ynormdata,0.6)
 
 fig = plt.figure()
 
@@ -181,13 +203,30 @@ plt.draw()
 plt.waitforbuttonpress(0)
 plt.close(fig)
 
-fig = plt.figure()
+fig2 = plt.figure()
 plt.grid(True)
 ax.set_ylim([0,1])
 ax.set_xlim([0,max(tel)])
-plt.plot(tel, remake(xrecalc,0.2),'o-')
+plt.plot(tel, xrecalc,'o-')
+xrecalc = remake(xrecalc,k)
 plt.plot(tel,xrecalc,'.-')
 plt.draw()
 plt.waitforbuttonpress(0)
-plt.close(fig)
+plt.close(fig2)
+dist = []
+ttm = []
+ttm,dist = make_dis(tel,xrecalc,ypoints,k)
+
+from by_distance import *
+
+flag = []
+tocmp = []
+#dist.pop(0)
+read_pos_n = make_pos_n(dist)
+classify(read_pos_n,tocmp,flag)
+
+print "\n",flag
+print tocmp
+print ""
+get_number(flag)
 #plt.show()

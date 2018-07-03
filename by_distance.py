@@ -1,4 +1,4 @@
-import math
+import math,random
 
 #variables for precalculation
 #read_pos   = [] #raw points of bar edges locations on image
@@ -177,6 +177,8 @@ def twok(m,ktor,tocmp,flag):
             cal.append(sum([abs(tocmp[m][j]-probnum[i][j]) for j in inx])) #calculating sum of differences
         print cal
         flag[m] = probnum[cal.index(min(cal))] #flag[m] must be possible number which has the lowest difference with tocmp[m]
+    else:
+        flag[m] = random.choice(numbers)
 
 #getting index of number with minimum chance of being wrong
 def calc_min(m,ktor,tocmp):
@@ -201,7 +203,10 @@ def classify_less_precision(flag,tocmp):
                 k+=1             #increment k
 
             elif (tocmp[m][i]>4): #if bar is higher than 4
-                flag[m][i]=4      #must be 4
+                if (i==0) or (i==2):
+                    flag[m][i]=3      
+                else:
+                    flag[m][n]=4
                 #tocmp[m][i]=4
             
             if (flag[m][i]==4) and ((i==0) or (i==2)): #if bar=4 isn't on 1 or 3 positions
@@ -211,7 +216,8 @@ def classify_less_precision(flag,tocmp):
             onek(m,flag)        #calculate it
             k-=1           #decrement k
         #elif (k==2):       #if numbers of unknown is 2
-        #    k-=twok(m,ktor,tocmp,flag)          #calculate it; decrement k 
+        #    k-=2
+        #    twok(m,ktor,tocmp,flag)          #calculate it; decrement k 
         elif(k>1):         #if numbers of unknown is >2
             n = calc_min(m,ktor,tocmp) #calculate index of most precise number
             k-=1  #decrement k
