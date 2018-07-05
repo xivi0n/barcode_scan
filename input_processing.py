@@ -143,7 +143,8 @@ except ListenInterrupt as e:
 
 #print "(dx,dy):",[x,y for x,y in xpoints,ypoints]
 
-physical_dist = int(input("Enter physical distance: "))
+#physical_dist = int(input("Enter physical distance: "))
+physical_dist = 7
 k = 0.5
 v = 1.0*physical_dist/timeEl
 
@@ -152,64 +153,65 @@ ypoints.pop(0)
 tel.pop(0)
 
 ax = plt.gca()
-fig = plt.figure()
-#ax.set_ylim()
-plt.subplot(2, 1, 1)
-ax.set_xlim([0,max(tel)])
+# fig = plt.figure()
+# #ax.set_ylim()
+# plt.subplot(2, 1, 1)
+# ax.set_xlim([0,max(tel)])
 xpoints = np.abs(xpoints)
-plt.plot(tel, xpoints,'.-')
+# plt.plot(tel, xpoints,'.-')
 
-#xpoints = recalc_x(xpoints,1)
+# #xpoints = recalc_x(xpoints,1)
 
-plt.plot(tel, xpoints,'.-')
-plt.grid(True)
-plt.ylabel('movement on x')
-plt.subplot(2, 1, 2)
-plt.plot(tel, ypoints,'o-')
-ax.set_xlim([0,max(tel)])
-plt.ylabel('movement on y')
-pom = []
-#for i in range(len(tel)):
-#    pom.append(np.sum(dpoints)/len(dpoints))
+# plt.plot(tel, xpoints,'.-') 	
+# plt.grid(True)
+# plt.ylabel('movement on x') 	
 
-#plt.plot(tel,pom)
-plt.grid(True)
-plt.draw()
-plt.waitforbuttonpress(0)
-plt.close(fig)
+# plt.subplot(2, 1, 2)
+# plt.plot(tel, ypoints,'o-')
+# ax.set_xlim([0,max(tel)])
+# plt.ylabel('movement on y')
+# pom = []
+# #for i in range(len(tel)):
+# #    pom.append(np.sum(dpoints)/len(dpoints))
+
+# #plt.plot(tel,pom)
+# plt.grid(True)
+# plt.draw()
+# plt.waitforbuttonpress(0)
+# plt.close(fig)
 
 xnormdata, avrgx = normalize(xpoints)
 ynormdata, avrgy = normalize(ypoints)
 
-pom = []
-for i in range(len(tel)):
-    pom.append(avrgx)
+# pom = []
+# for i in range(len(tel)):
+#     pom.append(avrgx)
 
-#xrecalc = recalculate(xnormdata,k)
+# #xrecalc = recalculate(xnormdata,k)
 xrecalc = xnormdata
 yrecalc = recalculate(ynormdata,0.6)
 
-fig = plt.figure()
+# fig = plt.figure()
 
-plt.subplot(2, 1, 1)
-plt.plot(tel,xnormdata,'.-')
-plt.plot(tel,xrecalc,'.-')
-ax.set_ylim([-1,1])
-ax.set_xlim([0,max(tel)])
-plt.ylabel('movement on x')
-plt.grid(True)
+# plt.subplot(2, 1, 1)
+# plt.plot(tel,xnormdata,'.-')
+# plt.plot(tel,xrecalc,'.-')
+# ax.set_ylim([-1,1])
+# ax.set_xlim([0,max(tel)])
+# plt.ylabel('movement on x')
+# plt.grid(True)
 
-plt.subplot(2, 1, 2)
-plt.plot(tel,ynormdata,'o-')
-plt.plot(tel,yrecalc,'o-')
-ax.set_ylim([-1,1])
-ax.set_xlim([0,max(tel)])
-plt.ylabel('movement on y')
-plt.grid(True)
+# plt.subplot(2, 1, 2)
+# plt.plot(tel,ynormdata,'o-')
+# plt.plot(tel,yrecalc,'o-')
+# ax.set_ylim([-1,1])
+# ax.set_xlim([0,max(tel)])
+# plt.ylabel('movement on y')
+# plt.grid(True)
 
-plt.draw()
-plt.waitforbuttonpress(0)
-plt.close(fig)
+# plt.draw()
+# plt.waitforbuttonpress(0)
+# plt.close(fig)
 
 fig2 = plt.figure()
 plt.grid(True)
@@ -239,3 +241,10 @@ print tocmp
 print ""
 get_number(flag)
 #plt.show()
+
+f = open("time_recalc_dist0.txt", "a")
+f.write(str(len(ttm))+"\n")
+f.write(" ".join(str(x) for x in ttm)+"\n")
+f.write(" ".join(str(x) for x in xrecalc)+"\n")
+f.write(" ".join(str(x) for x in dist)+"\n")
+f.close()
